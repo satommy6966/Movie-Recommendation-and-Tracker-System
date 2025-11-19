@@ -6,9 +6,9 @@ public class YearBasedStrategy implements RecommendationStrategy {
     @Override
     public ArrayList<Movie> recommend(User user, MovieLibrary lib, int topN) {
         // 统计历史中最近观看电影的年份分布，简单偏好“较新”
-        HashSet<Integer> watched = new HashSet<>();
+        HashSet<String> watched = new HashSet<>();
         for (HistoryEntry e : user.getHistory().list()) watched.add(e.getMovieId());
-        HashSet<Integer> inWatch = new HashSet<>(user.getWatchlist().list());
+        HashSet<String> inWatch = new HashSet<>(user.getWatchlist().list());
         ArrayList<Movie> candidates = new ArrayList<>();
         for (Movie m : lib.listAll()) {
             if (watched.contains(m.getId())) continue;

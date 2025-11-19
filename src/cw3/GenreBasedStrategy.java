@@ -2,15 +2,19 @@ package cw3;
 
 import java.util.*;
 
-public class GenreBasedStrategy implements RecommendationStrategy {
+public class GenreBasedStrategy implements RecommendationStrategy
+{
     @Override
-    public ArrayList<Movie> recommend(User user, MovieLibrary lib, int topN) {
+    public ArrayList<Movie> recommend(User user, MovieLibrary lib, int topN)
+    {
         // 1) 历史直方图
         HashMap<String, Integer> hist = user.getHistory().genreHistogram(lib);
         // 2) 生成候选：未看 & 不在watchlist
-        HashSet<Integer> watched = new HashSet<>();
+        HashSet<String> watched = new HashSet<>();
+
         for (HistoryEntry e : user.getHistory().list()) watched.add(e.getMovieId());
-        HashSet<Integer> inWatch = new HashSet<>(user.getWatchlist().list());
+
+        HashSet<String> inWatch = new HashSet<>(user.getWatchlist().list());
 
         ArrayList<Movie> candidates = new ArrayList<>();
         for (Movie m : lib.listAll()) {

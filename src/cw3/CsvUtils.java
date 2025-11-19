@@ -1,35 +1,15 @@
 package cw3;
 
-import java.util.ArrayList;
-
 public final class CsvUtils {
     private CsvUtils() {}
 
     /**
-     * 简易CSV解析：支持用双引号包裹的字段与逗号分隔；不处理换行内嵌等高级场景。
+     * 你的 movies.csv / users.csv 都是简单的逗号分隔、没有双引号，
+     * 所以这里直接用 split(",") 就够了。
      */
     public static String[] parseCsvLine(String line) {
-        ArrayList<String> out = new ArrayList<>();
-        StringBuilder cur = new StringBuilder();
-        boolean inQuotes = false;
-        for (int i = 0; i < line.length(); i++) {
-            char c = line.charAt(i);
-            if (c == '"') {
-                // 处理转义双引号 ""
-                if (inQuotes && i + 1 < line.length() && line.charAt(i + 1) == '"') {
-                    cur.append('"'); i++; // 跳过第二个引号
-                } else {
-                    inQuotes = !inQuotes;
-                }
-            } else if (c == ',' && !inQuotes) {
-                out.add(cur.toString());
-                cur.setLength(0);
-            } else {
-                cur.append(c);
-            }
-        }
-        out.add(cur.toString());
-        return out.toArray(new String[0]);
+        if (line == null) return new String[0];
+        return line.split(",", -1); // -1 保留空字段
     }
 
     public static String escape(String raw) {

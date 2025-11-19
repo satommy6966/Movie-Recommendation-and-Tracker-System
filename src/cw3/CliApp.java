@@ -11,28 +11,36 @@ public class CliApp {
     private final AuthService auth = new AuthService(users);
     private final Scanner scanner = new Scanner(System.in);
 
-    public void run() {
+    public void run()
+    {
         // 加载数据
-        try {
+        try
+        {
             lib.loadFromCsv(AppConfig.MOVIES_CSV);
             users.loadFromCsv(AppConfig.USERS_CSV);
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             System.out.println("[FATAL] Failed to load CSV files: " + e.getMessage());
             return;
         }
 
         User current = null;
-        while (true) {
-            if (current == null) {
+        while (true)
+        {
+            if (current == null)
+            {
                 showMenuLoggedOut();
                 int opt = Validators.requireIntInRange(scanner, 0, 2);
                 if (opt == 0) { System.out.println("Bye."); break; }
                 if (opt == 1) { current = doLogin(); }
                 if (opt == 2) { doRegister(); }
-            } else {
+            }
+            else
+            {
                 showMenuLoggedIn(current);
                 int opt = Validators.requireIntInRange(scanner, 0, 8);
-                switch (opt) {
+                switch (opt)
+                {
                     case 0: System.out.println("Bye."); persistAndExit(); return;
                     case 1: doBrowse(); break;
                     case 2: doAddToWatchlist(current); break;
@@ -41,14 +49,16 @@ public class CliApp {
                     case 5: doMarkWatched(current); break;
                     case 6: doViewHistory(current); break;
                     case 7: doRecommend(current); break;
-                    case 8: current = null; System.out.println("Logged out."); break;
+                    case 8: doChangeStrategy(); break;
+                    case 9: current = null; System.out.println("Logged out."); break;
                     default: System.out.println("Unknown option.");
                 }
             }
         }
     }
 
-    private void showMenuLoggedOut() {
+    private void showMenuLoggedOut()
+    {
         System.out.println("\n=== Main Menu (Logged Out) ===");
         System.out.println("1) Login");
         System.out.println("2) Register (Advanced)");
@@ -56,7 +66,8 @@ public class CliApp {
         System.out.print("Enter option: ");
     }
 
-    private void showMenuLoggedIn(User u) {
+    private void showMenuLoggedIn(User u)
+    {
         System.out.println("\n=== Main Menu (User: " + u.getUsername() + ") ===");
         System.out.println("1) Browse movies");
         System.out.println("2) Add movie to watchlist");
@@ -65,12 +76,14 @@ public class CliApp {
         System.out.println("5) Mark movie as watched");
         System.out.println("6) View history");
         System.out.println("7) Get recommendations (Top-" + AppConfig.DEFAULT_TOP_N + ")");
-        System.out.println("8) Logout");
+        System.out.println("8) Change recommendation strategy");
+        System.out.println("9) Logout");
         System.out.println("0) Exit");
         System.out.print("Enter option: ");
     }
 
-    private User doLogin() {
+    private User doLogin()
+    {
         System.out.print("Username: ");
         String u = scanner.nextLine();
         System.out.print("Password: ");
@@ -81,7 +94,8 @@ public class CliApp {
         return user;
     }
 
-    private void doRegister() {
+    private void doRegister()
+    {
         System.out.print("New username: ");
         String u = scanner.nextLine();
         System.out.print("New password: ");
@@ -92,27 +106,31 @@ public class CliApp {
 
     private void doBrowse() {
         System.out.println("\n-- All Movies --");
-        for (Movie m : lib.listAll()) System.out.println("  " + m);
+        System.out.println("[DEBUG] movies count = " + lib.listAll().size());
+        for (Movie m : lib.listAll()) {
+            System.out.println("  " + m);
+        }
     }
 
-    private void doAddToWatchlist(User user) {
+    private void doAddToWatchlist(User user)
+    {
         System.out.print("Enter movie ID to add: ");
-        int id = Validators.safeParseInt(scanner.nextLine(), -1);
-        if (id < 0 || lib.getById(id) == null) { System.out.println("Invalid movie ID."); return; }
+        String id = scanner.nextLine().trim();
+        if (id.isEmpty() || lib.getById(id) == null) { System.out.println("Invalid movie ID."); return; }
         boolean ok = user.getWatchlist().add(id);
         System.out.println(ok ? "Added." : "Already in watchlist.");
     }
 
     private void doRemoveFromWatchlist(User user) {
         System.out.print("Enter movie ID to remove: ");
-        int id = Validators.safeParseInt(scanner.nextLine(), -1);
+        String id = scanner.nextLine().trim();
         boolean ok = user.getWatchlist().remove(id);
         System.out.println(ok ? "Removed." : "Not in watchlist.");
     }
 
     private void doViewWatchlist(User user) {
         System.out.println("\n-- Watchlist --");
-        for (int id : user.getWatchlist().list()) {
+        for (String id : user.getWatchlist().list()) {
             Movie m = lib.getById(id);
             System.out.println("  " + (m == null ? ("#" + id) : m.toString()));
         }
@@ -120,8 +138,8 @@ public class CliApp {
 
     private void doMarkWatched(User user) {
         System.out.print("Enter movie ID watched: ");
-        int id = Validators.safeParseInt(scanner.nextLine(), -1);
-        if (id < 0 || lib.getById(id) == null) { System.out.println("Invalid movie ID."); return; }
+        String id = scanner.nextLine().trim();
+        if (id.isEmpty() || lib.getById(id) == null) { System.out.println("Invalid movie ID."); return; }
         user.getHistory().add(id, System.currentTimeMillis());
         if (user.getWatchlist().contains(id)) user.getWatchlist().remove(id);
         System.out.println("Marked watched.");
@@ -137,11 +155,38 @@ public class CliApp {
 
     private void doRecommend(User user) {
         // 默认使用 Genre 策略，可扩展成可切换
-        engine.setStrategy(new GenreBasedStrategy());
         ArrayList<Movie> rec = engine.recommend(user, lib, AppConfig.DEFAULT_TOP_N);
         System.out.println("\n-- Recommendations --");
         int i = 1;
         for (Movie m : rec) System.out.println("  " + (i++) + ". " + m);
+    }
+
+    private void doChangeStrategy() {
+        System.out.println("\nChoose recommendation strategy:");
+        System.out.println("1) Genre-based (default)");
+        System.out.println("2) Rating-based");
+        System.out.println("3) Year-based");
+        System.out.print("Enter option: ");
+
+        int opt = Validators.safeParseInt(scanner.nextLine(), -1);
+
+        switch (opt) {
+            case 1:
+                engine.setStrategy(new GenreBasedStrategy());
+                System.out.println("Strategy set to Genre-based.");
+                break;
+            case 2:
+                engine.setStrategy(new RatingBasedStrategy());
+                System.out.println("Strategy set to Rating-based.");
+                break;
+            case 3:
+                engine.setStrategy(new YearBasedStrategy());
+                System.out.println("Strategy set to Year-based.");
+                break;
+            default:
+                System.out.println("Invalid option.");
+        }
+        System.out.println("[DEBUG] current strategy = " + engine.getClass().getName());
     }
 
     private void persistAndExit() {

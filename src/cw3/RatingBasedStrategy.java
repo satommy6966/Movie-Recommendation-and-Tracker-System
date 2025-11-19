@@ -5,9 +5,9 @@ import java.util.*;
 public class RatingBasedStrategy implements RecommendationStrategy {
     @Override
     public ArrayList<Movie> recommend(User user, MovieLibrary lib, int topN) {
-        HashSet<Integer> watched = new HashSet<>();
+        HashSet<String> watched = new HashSet<>();
         for (HistoryEntry e : user.getHistory().list()) watched.add(e.getMovieId());
-        HashSet<Integer> inWatch = new HashSet<>(user.getWatchlist().list());
+        HashSet<String> inWatch = new HashSet<>(user.getWatchlist().list());
         ArrayList<Movie> candidates = new ArrayList<>();
         for (Movie m : lib.listAll()) {
             if (watched.contains(m.getId())) continue;

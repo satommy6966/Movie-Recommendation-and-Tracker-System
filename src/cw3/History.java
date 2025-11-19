@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class History {
     private final ArrayList<HistoryEntry> entries = new ArrayList<>();
 
-    public void add(int movieId, long whenEpochMillis) {
+    public void add(String movieId, long whenEpochMillis) {
         entries.add(new HistoryEntry(movieId, whenEpochMillis));
     }
 

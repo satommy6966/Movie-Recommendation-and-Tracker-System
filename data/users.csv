@@ -1,6 +1,6 @@
 Username,Password,Watchlist,History
-bob,,,
-eric,,,
-alice,,,
-diana,,,
-charlie,,,
+bob,bob123,M041;M042;M043;M044,M040@0;M041@0;M042@0
+eric,eric123,M091;M092;M093;M094,M091@0;M096@0;M099@0
+alice,alice123,M008;M015;M071;M048;M056,M001@0;M011@0;M015@0
+diana,diana123,M076;M077;M078,M029@0;M076@0;M098@0
+charlie,charlie123,M063;M064;M065;M066,M063@0;M080@0;M064@0

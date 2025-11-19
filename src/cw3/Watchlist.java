@@ -3,23 +3,23 @@ package cw3;
 import java.util.ArrayList;
 
 public class Watchlist {
-    private final ArrayList<Integer> movieIds = new ArrayList<>();
+    private final ArrayList<String> movieIds = new ArrayList<>();
 
-    public boolean add(int movieId) {
+    public boolean add(String movieId) {
         if (movieIds.contains(movieId)) return false;
         movieIds.add(movieId);
         return true;
     }
 
-    public boolean remove(int movieId) {
-        return movieIds.remove((Integer) movieId);
+    public boolean remove(String movieId) {
+        return movieIds.remove(movieId);
     }
 
-    public boolean contains(int movieId) {
+    public boolean contains(String movieId) {
         return movieIds.contains(movieId);
     }
 
-    public ArrayList<Integer> list() {
+    public ArrayList<String> list() {
         return new ArrayList<>(movieIds);
     }
 }

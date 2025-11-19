@@ -19,7 +19,10 @@ public final class Validators {
         while (true) {
             String line = sc.nextLine();
             int v = safeParseInt(line, Integer.MIN_VALUE);
-            if (v >= min && v <= max) return v;
+            if (v >= min && v <= max)
+            {
+                return v;
+            }
             System.out.println("Invalid input, please enter an integer in [" + min + ", " + max + "]:");
         }
     }
