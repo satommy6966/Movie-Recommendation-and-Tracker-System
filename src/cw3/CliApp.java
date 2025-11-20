@@ -43,14 +43,15 @@ public class CliApp {
                 {
                     case 0: System.out.println("Bye."); persistAndExit(); return;
                     case 1: doBrowse(); break;
-                    case 2: doAddToWatchlist(current); break;
-                    case 3: doRemoveFromWatchlist(current); break;
-                    case 4: doViewWatchlist(current); break;
-                    case 5: doMarkWatched(current); break;
-                    case 6: doViewHistory(current); break;
-                    case 7: doRecommend(current); break;
-                    case 8: doChangeStrategy(); break;
-                    case 9: current = null; System.out.println("Logged out."); break;
+                    case 2: doSearchMovies() ; break;
+                    case 3: doAddToWatchlist(current); break;
+                    case 4: doRemoveFromWatchlist(current); break;
+                    case 5: doViewWatchlist(current); break;
+                    case 6: doMarkWatched(current); break;
+                    case 7: doViewHistory(current); break;
+                    case 8: doRecommend(current); break;
+                    case 9: doChangeStrategy(); break;
+                    case 10: current = null; System.out.println("Logged out."); break;
                     default: System.out.println("Unknown option.");
                 }
             }
@@ -70,14 +71,15 @@ public class CliApp {
     {
         System.out.println("\n=== Main Menu (User: " + u.getUsername() + ") ===");
         System.out.println("1) Browse movies");
-        System.out.println("2) Add movie to watchlist");
-        System.out.println("3) Remove movie from watchlist");
-        System.out.println("4) View watchlist");
-        System.out.println("5) Mark movie as watched");
-        System.out.println("6) View history");
-        System.out.println("7) Get recommendations (Top-" + AppConfig.DEFAULT_TOP_N + ")");
-        System.out.println("8) Change recommendation strategy");
-        System.out.println("9) Logout");
+        System.out.println("2) Search movies");
+        System.out.println("3) Add movie to watchlist");
+        System.out.println("4) Remove movie from watchlist");
+        System.out.println("5) View watchlist");
+        System.out.println("6) Mark movie as watched");
+        System.out.println("7) View history");
+        System.out.println("8) Get recommendations (Top-" + AppConfig.DEFAULT_TOP_N + ")");
+        System.out.println("9) Change recommendation strategy");
+        System.out.println("10) Logout");
         System.out.println("0) Exit");
         System.out.print("Enter option: ");
     }
@@ -108,6 +110,31 @@ public class CliApp {
         System.out.println("\n-- All Movies --");
         System.out.println("[DEBUG] movies count = " + lib.listAll().size());
         for (Movie m : lib.listAll()) {
+            System.out.println("  " + m);
+        }
+    }
+
+    private void doSearchMovies()
+    {
+        System.out.print("Keyword in title (empty to skip): ");
+        String kw = scanner.nextLine().trim().toLowerCase();
+
+        System.out.print("Genre (empty to skip): ");
+        String genre = scanner.nextLine().trim().toLowerCase();
+
+        System.out.print("Min year (empty to skip): ");
+        String minYearStr = scanner.nextLine().trim();
+        System.out.print("Max year (empty to skip): ");
+        String maxYearStr = scanner.nextLine().trim();
+
+        int minYear = minYearStr.isEmpty() ? Integer.MIN_VALUE : Validators.safeParseInt(minYearStr, Integer.MIN_VALUE);
+        int maxYear = maxYearStr.isEmpty() ? Integer.MAX_VALUE : Validators.safeParseInt(maxYearStr, Integer.MAX_VALUE);
+
+        System.out.println("\n-- Search Result --");
+        for (Movie m : lib.listAll()) {
+            if (!kw.isEmpty() && !m.getTitle().toLowerCase().contains(kw)) continue;
+            if (!genre.isEmpty() && !m.getGenre().toLowerCase().contains(genre)) continue;
+            if (m.getYear() < minYear || m.getYear() > maxYear) continue;
             System.out.println("  " + m);
         }
     }
