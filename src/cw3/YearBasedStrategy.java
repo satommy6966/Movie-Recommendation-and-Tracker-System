@@ -1,23 +1,54 @@
 package cw3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 
-public class YearBasedStrategy implements RecommendationStrategy {
-    @Override
+/**
+ * YearBasedStrategy：简单按上映年份从新到旧推荐。
+ */
+public class YearBasedStrategy {
+
     public ArrayList<Movie> recommend(User user, MovieLibrary lib, int topN) {
-        // 统计历史中最近观看电影的年份分布，简单偏好“较新”
-        HashSet<String> watched = new HashSet<>();
-        for (HistoryEntry e : user.getHistory().list()) watched.add(e.getMovieId());
-        HashSet<String> inWatch = new HashSet<>(user.getWatchlist().list());
-        ArrayList<Movie> candidates = new ArrayList<>();
-        for (Movie m : lib.listAll()) {
+        HashSet<String> watched = new HashSet<String>();
+        ArrayList<HistoryEntry> histList = user.getHistory().list();
+        for (int i = 0; i < histList.size(); i++) {
+            watched.add(histList.get(i).getMovieId());
+        }
+
+        HashSet<String> inWatch = new HashSet<String>(user.getWatchlist().list());
+
+        ArrayList<Movie> candidates = new ArrayList<Movie>();
+        ArrayList<Movie> all = lib.listAll();
+        for (int i = 0; i < all.size(); i++) {
+            Movie m = all.get(i);
             if (watched.contains(m.getId())) continue;
             if (inWatch.contains(m.getId())) continue;
             candidates.add(m);
         }
-        candidates.sort((a, b) -> Integer.compare(b.getYear(), a.getYear()));
-        ArrayList<Movie> out = new ArrayList<>();
-        for (int i = 0; i < candidates.size() && i < topN; i++) out.add(candidates.get(i));
+
+        sortByYearDesc(candidates);
+
+        ArrayList<Movie> out = new ArrayList<Movie>();
+        for (int i = 0; i < candidates.size() && i < topN; i++) {
+            out.add(candidates.get(i));
+        }
         return out;
+    }
+
+    private void sortByYearDesc(ArrayList<Movie> list) {
+        int n = list.size();
+        for (int i = 0; i < n - 1; i++) {
+            int best = i;
+            for (int j = i + 1; j < n; j++) {
+                if (list.get(j).getYear() > list.get(best).getYear()) {
+                    best = j;
+                }
+            }
+            if (best != i) {
+                Movie tmp = list.get(i);
+                list.set(i, list.get(best));
+                list.set(best, tmp);
+            }
+        }
     }
 }

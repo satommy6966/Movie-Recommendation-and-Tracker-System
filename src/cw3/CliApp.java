@@ -38,7 +38,7 @@ public class CliApp {
             else
             {
                 showMenuLoggedIn(current);
-                int opt = Validators.requireIntInRange(scanner, 0, 8);
+                int opt = Validators.requireIntInRange(scanner, 0, 10);
                 switch (opt)
                 {
                     case 0: System.out.println("Bye."); persistAndExit(); return;
@@ -181,11 +181,12 @@ public class CliApp {
     }
 
     private void doRecommend(User user) {
-        // 默认使用 Genre 策略，可扩展成可切换
         ArrayList<Movie> rec = engine.recommend(user, lib, AppConfig.DEFAULT_TOP_N);
         System.out.println("\n-- Recommendations --");
         int i = 1;
-        for (Movie m : rec) System.out.println("  " + (i++) + ". " + m);
+        for (Movie m : rec) {
+            System.out.println("  " + (i++) + ". " + m);
+        }
     }
 
     private void doChangeStrategy() {
@@ -197,23 +198,18 @@ public class CliApp {
 
         int opt = Validators.safeParseInt(scanner.nextLine(), -1);
 
-        switch (opt) {
-            case 1:
-                engine.setStrategy(new GenreBasedStrategy());
-                System.out.println("Strategy set to Genre-based.");
-                break;
-            case 2:
-                engine.setStrategy(new RatingBasedStrategy());
-                System.out.println("Strategy set to Rating-based.");
-                break;
-            case 3:
-                engine.setStrategy(new YearBasedStrategy());
-                System.out.println("Strategy set to Year-based.");
-                break;
-            default:
-                System.out.println("Invalid option.");
+        if (opt == 1) {
+            engine.setStrategyType(RecommendationEngine.STRATEGY_GENRE);
+            System.out.println("Strategy set to Genre-based.");
+        } else if (opt == 2) {
+            engine.setStrategyType(RecommendationEngine.STRATEGY_RATING);
+            System.out.println("Strategy set to Rating-based.");
+        } else if (opt == 3) {
+            engine.setStrategyType(RecommendationEngine.STRATEGY_YEAR);
+            System.out.println("Strategy set to Year-based.");
+        } else {
+            System.out.println("Invalid option.");
         }
-        System.out.println("[DEBUG] current strategy = " + engine.getClass().getName());
     }
 
     private void persistAndExit() {

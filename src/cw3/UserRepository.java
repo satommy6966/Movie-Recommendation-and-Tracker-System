@@ -117,27 +117,29 @@ public class UserRepository {
         }
     }
 
-    private String joinList(ArrayList<String> ids)
-    {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < ids.size(); i++)
-        {
-            if (i > 0) sb.append(AppConfig.DELIM_LIST);
-            sb.append(ids.get(i));
+    // watchlist: "M001;M002;M003"
+    private String joinList(ArrayList<String> ids) {
+        String result = "";
+        for (int i = 0; i < ids.size(); i++) {
+            if (i > 0) {
+                result = result + AppConfig.DELIM_LIST;
+            }
+            result = result + ids.get(i);
         }
-        return sb.toString();
+        return result;
     }
 
-    private String joinHistory(ArrayList<HistoryEntry> entries)
-    {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < entries.size(); i++)
-        {
-            if (i > 0) sb.append(AppConfig.DELIM_LIST);
+    // history: "M001@12345;M002@67890"
+    private String joinHistory(ArrayList<HistoryEntry> entries) {
+        String result = "";
+        for (int i = 0; i < entries.size(); i++) {
+            if (i > 0) {
+                result = result + AppConfig.DELIM_LIST;
+            }
             HistoryEntry e = entries.get(i);
-            sb.append(e.getMovieId()).append(AppConfig.DELIM_PAIR).append(e.getWatchedAtEpochMillis());
+            result = result + e.getMovieId() + AppConfig.DELIM_PAIR + e.getWatchedAtEpochMillis();
         }
-        return sb.toString();
+        return result;
     }
 
     public User find(String username)
